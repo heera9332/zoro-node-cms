@@ -1,4 +1,11 @@
+/**
+ * @date 03-06-2025
+ * @author @heera9331
+ * @description
+ */
+
 import mongoose from "mongoose";
+import { debugLog } from "@/lib/logger";
 
 class Mongo {
   private static instance: Mongo;
@@ -14,8 +21,8 @@ class Mongo {
   }
 
   async makeConnection(): Promise<void> {
+    /** Already connected to MongoDB. */
     if (this.connection && this.connection.readyState === 1) {
-      console.log("Already connected to MongoDB.");
       return;
     }
 
@@ -27,33 +34,33 @@ class Mongo {
       this.connection = mongoose.connection;
 
       this.connection.on("connected", () => console.log("MongoDB connected."));
-      this.connection.on("error", (err) =>
-        console.error("MongoDB Error:", err)
-      );
+      this.connection.on("error", (err) => debugLog(["MongoDB Error:", err]));
       this.connection.on("disconnected", () =>
         console.log("MongoDB disconnected.")
       );
     } catch (error) {
-      console.error("MongoDB Connection Error:", error);
+      debugLog(["MongoDB Connection Error:", error]);
+      /* @ts-ignore */
       throw new Error(error?.message);
     }
   }
 
   async endConnection(): Promise<void> {
     if (!this.connection || this.connection.readyState === 0) {
-      console.log("No active MongoDB connection to close.");
+      debugLog("No active MongoDB connection to close.");
       return;
     }
 
     try {
       await mongoose.disconnect();
-      console.log("MongoDB Connection closed.");
+      debugLog("MongoDB Connection closed.");
     } catch (error) {
-      console.error("Error closing MongoDB connection:", error);
+      debugLog(["Error closing MongoDB connection:", error]);
+      /* @ts-ignore */
       throw new Error(error?.message);
     }
   }
 }
 
-const mongodb = new Mongo("your-mongodb-connection-string");
-export { mongodb };
+const mongodb = new Mongo(process.env.DATABASE_URL!);
+export default mongodb;

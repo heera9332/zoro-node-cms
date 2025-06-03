@@ -1,3 +1,5 @@
-import { mongodb } from "./mongo";
+import mongodb from "./mongo";
+import { upload } from "@/config/multer";
+import emailService from "./email-service";
 
-export { mongodb };
+export { mongodb, upload, emailService };

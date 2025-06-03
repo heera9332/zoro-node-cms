@@ -1,27 +1,68 @@
-import multer, { type StorageEngine } from "multer";
+import { upload } from "@/config";
 import path from "path";
 import fs from "fs";
 import config from "@/node-zoro-cms.config";
+import express, { type NextFunction } from "express";
+
+import {
+  createMediaCtrl,
+  getMediaCtrl,
+  getMediasCtrl,
+  updateMediaCtrl,
+  deleteMediaCtrl,
+} from "@/controllers";
 
 const mediaRoot = path.resolve(process.cwd(), config.mediaDir);
 
-const storage: StorageEngine = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const uploadDir = path.join(mediaRoot, year.toString(), month);
+// Ensure media directory exists
+if (!fs.existsSync(mediaRoot)) {
+  fs.mkdirSync(mediaRoot, { recursive: true });
+}
 
-    // Ensure directory exists
-    fs.mkdirSync(uploadDir, { recursive: true });
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const base = path.basename(file.originalname, ext).replace(/\s+/g, "_");
-    const timestamp = Date.now();
-    cb(null, `${base}-${timestamp}${ext}`);
-  },
+const mediaRouter = express.Router();
+
+// GET all media with pagination/filtering
+mediaRouter.get("/", getMediasCtrl);
+
+// GET media by id
+// @ts-ignore
+mediaRouter.get("/:id", getMediaCtrl);
+
+// POST create media with file upload middleware
+// @ts-ignore
+mediaRouter.post("/", upload.single("file"), async (req: Request, res : Response, next: NextFunction) => {
+  try {
+    // @ts-ignore
+    if (!req.file) {
+      // @ts-ignore
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+    // Attach file info + any other form fields to req.formData for controller
+    req.formData = {
+      // @ts-ignore
+      url: `/uploads/${req.file.filename}`,
+      // @ts-ignore
+      filename: req.file.filename,
+      // @ts-ignore
+      mimetype: req.file.mimetype,
+      // @ts-ignore
+      size: req.file.size,
+      // add any other fields you want to save from req.body here
+      ...req.body,
+    };
+
+    await createMediaCtrl(req, res);
+  } catch (error) {
+    next(error);
+  }
 });
 
-export const upload = multer({ storage });
+// PUT update media by id
+// @ts-ignore
+mediaRouter.put("/:id", updateMediaCtrl);
+
+// DELETE media by id
+// @ts-ignore
+mediaRouter.delete("/:id", deleteMediaCtrl);
+
+export default mediaRouter;

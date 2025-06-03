@@ -9,7 +9,7 @@ import TermTaxonomy from "./schema/term-texononmy";
 import Link from "./schema/links";
 
 export {
-  User
+  User,
   Post,
   Term,
   Comment,

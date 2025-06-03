@@ -1,23 +1,34 @@
-import { User } from "@/models";
+import { User, type IUser } from "@/models/schema/users";
+import mongoose from "mongoose";
 
-const getUsers = async () => {
-  const users = await User.find({});
-  return users;
+// Create a new user
+export const createUser = async (payload: Partial<IUser>): Promise<IUser> => {
+  const user = new User(payload);
+  return user.save();
 };
 
-const getUser = async (id: string) => {
-  const user = await User.find({ id });
-  return user;
+// Get all users
+export const getUsers = async (): Promise<IUser[]> => {
+  return User.find({}).exec();
 };
 
-const deleteUser = async (id: string) => {
-  const user = await User.deleteOne(id);
-  return user;
+// Get single user by ID
+export const getUser = async (id: string): Promise<IUser | null> => {
+  if (!mongoose.Types.ObjectId.isValid(id)) return null;
+  return User.findById(id).exec();
 };
 
-const updateUser = async (id: string, user) => {
-  const tmp = await User.updateOne({ id }, user);
-  return tmp;
+// Update user by ID
+export const updateUser = async (
+  id: string,
+  data: Partial<IUser>
+): Promise<IUser | null> => {
+  if (!mongoose.Types.ObjectId.isValid(id)) return null;
+  return User.findByIdAndUpdate(id, data, { new: true }).exec();
 };
 
-export { getUser, getUsers, updateUser, deleteUser };
+// Delete user by ID
+export const deleteUser = async (id: string): Promise<IUser | null> => {
+  if (!mongoose.Types.ObjectId.isValid(id)) return null;
+  return User.findByIdAndDelete(id).exec();
+};

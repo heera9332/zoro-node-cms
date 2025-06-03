@@ -1,5 +1,16 @@
 import mongoose from "mongoose";
 
+export interface IPost extends Document {
+  title: string;
+  content: string;
+  status: "publish" | "draft" | "pending" | "private";
+  author: mongoose.Types.ObjectId;
+  postType: string; // e.g. 'post', 'page', 'attachment'
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+
 const PostSchema = new mongoose.Schema(
   {
     title: { type: String, trim: true, required: true, default: "Untitled" },
@@ -45,5 +56,5 @@ PostSchema.pre("save", function (next) {
   next();
 });
 
-const Post = mongoose.model("Post", PostSchema);
+const Post = mongoose.model<IPost>("Post", PostSchema);
 export default Post;

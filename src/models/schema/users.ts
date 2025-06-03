@@ -5,7 +5,7 @@ export interface IUser extends Document {
   displayName: string; // Public-facing name
   email: string;
   password: string;
-  role: "admin" | "user" | "subscriber" | "student" | "editor";
+  roles: string[];
   refreshToken?: string;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
@@ -14,14 +14,17 @@ export interface IUser extends Document {
 const UserSchema: Schema = new Schema(
   {
     username: { type: String, required: true, unique: true },
-    displayName: { type: String, trim: true, default: "" }, // Public Name
+    displayName: { type: String, trim: true, default: "" },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    role: {
-      type: String,
+
+    roles: {
+      type: [String], // array of strings
       enum: ["admin", "user", "student", "subscriber", "editor"],
-      default: "user",
+      default: ["user"], // default role inside array
+      required: true,
     },
+
     refreshToken: { type: String },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
@@ -41,7 +44,7 @@ const UserMetaSchema: Schema = new Schema(
   {
     user: { type: mongoose.Types.ObjectId, ref: "User", required: true },
     key: { type: String, required: true },
-    value: { type: Schema.Types.Mixed, required: true }, // Any type of value
+    value: { type: Schema.Types.Mixed, required: true },
   },
   { timestamps: true }
 );

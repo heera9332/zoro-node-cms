@@ -22,3 +22,4 @@ bun run index.ts
 ## References
 
 - wordpress like system pure nodejs with express, and rest api
+- authorization RBAC
