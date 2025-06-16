@@ -32,6 +32,15 @@ const UserSchema: Schema = new Schema(
   { timestamps: true }
 );
 
+UserSchema.set("toJSON", {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc: Document, ret: Record<string, any>) {
+    ret.id = ret._id;
+    delete ret._id;
+  },
+});
+
 const User = mongoose.model<IUser>("User", UserSchema);
 
 export interface IUserMeta extends Document {
@@ -48,6 +57,16 @@ const UserMetaSchema: Schema = new Schema(
   },
   { timestamps: true }
 );
+
+UserMetaSchema.set("toJSON", {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc: Document, ret: Record<string, any>) {
+    ret.id = ret._id;
+    delete ret._id;
+  },
+});
+
 
 const UserMeta = mongoose.model<IUserMeta>("UserMeta", UserMetaSchema);
 

@@ -20,6 +20,15 @@ const TermTaxonomySchema: Schema = new Schema(
   { timestamps: true }
 );
 
+TermTaxonomySchema.set("toJSON", {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc: Document, ret: Record<string, any>) {
+    ret.id = ret._id;
+    delete ret._id;
+  },
+});
+
 const TermTaxonomy = mongoose.model<ITermTaxonomy>("TermTaxonomy", TermTaxonomySchema);
 
 export default TermTaxonomy;

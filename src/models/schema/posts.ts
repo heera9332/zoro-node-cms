@@ -56,5 +56,15 @@ PostSchema.pre("save", function (next) {
   next();
 });
 
+PostSchema.set("toJSON", {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc: Document, ret: Record<string, any>) {
+    ret.id = ret._id;
+    delete ret._id;
+  },
+});
+
+
 const Post = mongoose.model<IPost>("Post", PostSchema);
 export default Post;

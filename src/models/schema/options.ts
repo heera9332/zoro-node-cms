@@ -15,6 +15,16 @@ const OptionSchema: Schema = new Schema(
   { timestamps: true }
 );
 
+OptionSchema.set("toJSON", {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc: Document, ret: Record<string, any>) {
+    ret.id = ret._id;
+    delete ret._id;
+  },
+});
+
+
 const Option = mongoose.model<IOption>("Option", OptionSchema);
 
 export default Option;

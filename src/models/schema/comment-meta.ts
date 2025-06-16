@@ -15,6 +15,15 @@ const CommentMetaSchema: Schema = new Schema(
   { timestamps: true }
 );
 
+CommentMetaSchema.set("toJSON", {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc: Document, ret: Record<string, any>) {
+    ret.id = ret._id;
+    delete ret._id;
+  },
+});
+
 const CommentMeta = mongoose.model<ICommentMeta>(
   "CommentMeta",
   CommentMetaSchema

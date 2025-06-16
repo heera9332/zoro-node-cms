@@ -15,6 +15,16 @@ const TermMetaSchema: Schema = new Schema(
   { timestamps: true }
 );
 
+TermMetaSchema.set("toJSON", {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc: Document, ret: Record<string, any>) {
+    ret.id = ret._id;
+    delete ret._id;
+  },
+});
+
+
 const TermMeta = mongoose.model<ITermMeta>("TermMeta", TermMetaSchema);
 
 export default TermMeta;

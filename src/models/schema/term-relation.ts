@@ -17,6 +17,16 @@ const TermRelationshipSchema: Schema = new Schema(
   { timestamps: true }
 );
 
+
+TermRelationshipSchema.set("toJSON", {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc: Document, ret: Record<string, any>) {
+    ret.id = ret._id;
+    delete ret._id;
+  },
+});
+
 const TermRelationship = mongoose.model<ITermRelationship>(
   "TermRelationship",
   TermRelationshipSchema

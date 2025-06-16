@@ -33,6 +33,15 @@ const LinkSchema: Schema = new Schema(
   { timestamps: true }
 );
 
+LinkSchema.set("toJSON", {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc: Document, ret: Record<string, any>) {
+    ret.id = ret._id;
+    delete ret._id;
+  },
+});
+
 const Link = mongoose.model<ILink>("Link", LinkSchema);
 
 export default Link;

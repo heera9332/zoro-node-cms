@@ -24,6 +24,15 @@ TermSchema.pre("save", function (next) {
   next();
 });
 
+TermSchema.set("toJSON", {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc: Document, ret: Record<string, any>) {
+    ret.id = ret._id;
+    delete ret._id;
+  },
+});
+
 const Term = mongoose.model<ITerm>("Term", TermSchema);
 
 export default Term;
